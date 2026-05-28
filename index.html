@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>St. George Marathon · Training Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --text: #1A1714;
+    --text2: rgba(26,23,20,0.6);
+    --text3: rgba(26,23,20,0.35);
+
+    /* Neons */
+    --neon-coral:   #FF4D6D;
+    --neon-lime:    #AAFF00;
+    --neon-cyan:    #00F5FF;
+    --neon-violet:  #BF5FFF;
+    --neon-orange:  #FF7A00;
+    --neon-yellow:  #FFE600;
+
+    /* Priority */
+    --pri-critical: var(--neon-coral);
+    --pri-keep:     var(--neon-violet);
+    --pri-flex:     var(--neon-lime);
+
+    /* Activity chip bg/fg */
+    --chip-run-bg:      rgba(0,245,255,0.12);
+    --chip-run-fg:      #007A8C;
+    --chip-long-bg:     rgba(170,255,0,0.15);
+    --chip-long-fg:     #4A7000;
+    --chip-trail-bg:    rgba(255,122,0,0.12);
+    --chip-trail-fg:    #8C4400;
+    --chip-yoga-bg:     rgba(191,95,255,0.12);
+    --chip-yoga-fg:     #6A00B8;
+    --chip-strength-bg: rgba(255,230,0,0.18);
+    --chip-strength-fg: #6B5900;
+    --chip-itb-bg:      rgba(255,77,109,0.1);
+    --chip-itb-fg:      #B0002A;
+    --chip-rest-bg:     rgba(0,0,0,0.05);
+    --chip-rest-fg:     var(--text3);
+    --chip-race-bg:     rgba(170,255,0,0.2);
+    --chip-race-fg:     #3A6000;
+    --chip-travel-bg:   rgba(0,0,0,0.06);
+    --chip-travel-fg:   var(--text2);
+    --chip-custom-bg:   rgba(191,95,255,0.1);
+    --chip-custom-fg:   #6A00B8;
+
+    --done-bg:     rgba(170,255,0,0.1);
+    --done-border: rgba(170,255,0,0.5);
+    --done-check:  #5AAA00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 16px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .app-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  .app-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--neon-coral);
+  }
+
+  .race-badge {
+    background: rgba(255,77,109,0.1);
+    border: 1.5px solid rgba(255,77,109,0.3);
+    color: var(--neon-coral);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-lime), var(--neon-cyan));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  /* ── WEEK NAV ── */
+  .week-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 10px 16px;
+    scrollbar-width: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 82px;
+    z-index: 99;
+  }
+  .week-nav::-webkit-scrollbar { display: none; }
+
+  .week-pill {
+    flex-shrink: 0;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1.5px solid var(--border2);
+    color: var(--text3);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .week-pill.active {
+    background: var(--neon-coral);
+    border-color: var(--neon-coral);
+    color: #fff;
+    font-weight: 600;
+  }
+  .week-pill.has-done { border-color: var(--neon-lime); color: #4A7000; }
+  .week-pill.is-vacation { border-color: var(--neon-cyan); color: #007A8C; }
+  .week-pill.is-race { border-color: var(--neon-coral); color: var(--neon-coral); font-weight: 600; }
+
+  /* ── MAIN ── */
+  .main { padding: 0 0 20px; }
+
+  .week-section { padding: 16px 16px 8px; }
+
+  .week-header { margin-bottom: 14px; }
+
+  .week-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .week-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .week-dates { font-size: 12px; color: var(--text3); }
+
+  .week-stats { display: flex; gap: 14px; flex-wrap: wrap; }
+  .week-stat { font-size: 11px; color: var(--text2); }
+  .week-stat strong { color: var(--text); font-weight: 600; }
+
+  .week-note {
+    font-size: 11px;
+    color: var(--neon-orange);
+    font-style: italic;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+
+  /* ── DAY CARDS ── */
+  .days-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .day-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .day-card.all-done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+  }
+  .day-card.rest-day { background: var(--surface2); opacity: 0.65; }
+  .day-card.vacation-day { border-color: rgba(0,245,255,0.3); background: rgba(0,245,255,0.04); }
+  .day-card.travel-day { border-style: dashed; opacity: 0.7; }
+  .day-card.race-day { border-color: rgba(255,77,109,0.4); background: rgba(255,77,109,0.04); }
+
+  .day-main {
+    display: flex;
+    align-items: stretch;
+    padding: 12px 14px;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .day-date-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    flex-shrink: 0;
+  }
+
+  .day-name-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    line-height: 1;
+  }
+
+  .day-num-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text3);
+    line-height: 1.05;
+  }
+
+  .day-card.all-done .day-num-label { color: var(--done-check); }
+  .day-card.race-day .day-num-label { color: var(--neon-coral); }
+
+  .day-divider {
+    width: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+    border-radius: 1px;
+    margin: 2px 0;
+  }
+
+  .day-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .activity-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .chip {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    letter-spacing: 0.01em;
+  }
+
+  .chip-run      { background: var(--chip-run-bg);      color: var(--chip-run-fg); }
+  .chip-long     { background: var(--chip-long-bg);     color: var(--chip-long-fg); }
+  .chip-trail    { background: var(--chip-trail-bg);    color: var(--chip-trail-fg); }
+  .chip-yoga     { background: var(--chip-yoga-bg);     color: var(--chip-yoga-fg); }
+  .chip-strength { background: var(--chip-strength-bg); color: var(--chip-strength-fg); }
+  .chip-itb      { background: var(--chip-itb-bg);      color: var(--chip-itb-fg); }
+  .chip-rest     { background: var(--chip-rest-bg);     color: var(--chip-rest-fg); }
+  .chip-race     { background: var(--chip-race-bg);     color: var(--chip-race-fg); border: 1px solid rgba(170,255,0,0.4); }
+  .chip-travel   { background: var(--chip-travel-bg);   color: var(--chip-travel-fg); }
+  .chip-custom   { background: var(--chip-custom-bg);   color: var(--chip-custom-fg); }
+
+  .day-detail-text {
+    font-size: 10.5px;
+    color: var(--text3);
+    line-height: 1.4;
+  }
+
+  .day-dist-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+  }
+
+  /* ── CHECK CIRCLES ── */
+  .day-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-left: 4px;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pri-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .pri-critical { background: var(--pri-critical); }
+  .pri-keep     { background: var(--pri-keep); }
+  .pri-flex     { background: var(--pri-flex); }
+  .pri-none     { background: transparent; }
+
+  .check-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border2);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    color: transparent;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .check-btn:active { transform: scale(0.85); }
+
+  .check-btn.checked {
+    background: var(--neon-lime);
+    border-color: var(--neon-lime);
+    color: #3A6000;
+  }
+
+  /* color-coded unchecked rings by activity type */
+  .check-btn.ring-run      { border-color: var(--neon-cyan); }
+  .check-btn.ring-long     { border-color: var(--neon-lime); }
+  .check-btn.ring-trail    { border-color: var(--neon-orange); }
+  .check-btn.ring-yoga     { border-color: var(--neon-violet); }
+  .check-btn.ring-strength { border-color: var(--neon-yellow); }
+  .check-btn.ring-itb      { border-color: var(--neon-coral); }
+  .check-btn.ring-race     { border-color: var(--neon-lime); }
+
+  /* ── EXPAND PANEL ── */
+  .day-expand {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .day-card.expanded .day-expand { display: block; }
+
+  .expand-inner {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .add-activity-row { display: flex; gap: 8px; }
+
+  .add-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+  }
+  .add-input::placeholder { color: var(--text3); }
+  .add-input:focus { border-color: var(--neon-violet); }
+
+  .add-btn {
+    background: var(--neon-violet);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+  }
+
+  .custom-activities { display: flex; flex-direction: column; gap: 6px; }
+
+  .custom-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--chip-custom-bg);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--chip-custom-fg);
+    font-weight: 500;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 0 0 8px;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    padding: 14px 16px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--text2);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px 22px;
+    z-index: 100;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+  }
+
+  .nav-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border2);
+    color: var(--text2);
+    border-radius: 12px;
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .nav-btn:active { transform: scale(0.95); background: var(--neon-coral); color: #fff; border-color: var(--neon-coral); }
+  .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
+
+  .nav-center { font-size: 11px; color: var(--text3); text-align: center; font-weight: 500; }
+
+  /* ── RACE BANNER ── */
+  .race-banner {
+    background: rgba(255,77,109,0.08);
+    border: 1.5px solid rgba(255,77,109,0.25);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--neon-coral);
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .done-count {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: right;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  .double-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--neon-orange);
+    margin-bottom: 1px;
+  }
+
+  .vac-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #007A8C;
+    margin-bottom: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-top">
+    <div class="app-title">St. George<br><em>Marathon</em></div>
+    <div class="race-badge">Oct 3, 2026</div>
+  </div>
+  <div class="progress-row">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 done</div>
+  </div>
+</header>
+
+<nav class="week-nav" id="weekNav"></nav>
+<main class="main" id="mainContent"></main>
+
+<div class="bottom-nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeWeek(-1)">← Prev</button>
+  <div class="nav-center" id="navCenter"></div>
+  <button class="nav-btn" id="nextBtn" onclick="changeWeek(1)">Next →</button>
+</div>
+
+<script>
+// ─── ACTIVITY CONFIG ─────────────────────────────────────────────────────────
+
+// checkable = true means this chip gets its own circle
+const CHIP_META = {
+  run:      { label:'Run',          cls:'chip-run',      ring:'ring-run',      checkable:true  },
+  long:     { label:'Long Run',     cls:'chip-long',     ring:'ring-long',     checkable:true  },
+  trail:    { label:'Trail',        cls:'chip-trail',    ring:'ring-trail',    checkable:true  },
+  yoga:     { label:'Yoga',         cls:'chip-yoga',     ring:'ring-yoga',     checkable:true  },
+  strength: { label:'Strength',     cls:'chip-strength', ring:'ring-strength', checkable:true  },
+  itb:      { label:'IT Band 10min',cls:'chip-itb',      ring:'ring-itb',      checkable:true  },
+  rest:     { label:'Rest',         cls:'chip-rest',     ring:'',              checkable:false },
+  race:     { label:'Race',         cls:'chip-race',     ring:'ring-long',     checkable:true  },
+  travel:   { label:'Travel',       cls:'chip-travel',   ring:'',              checkable:false },
+  custom:   { label:'Custom',       cls:'chip-custom',   ring:'ring-yoga',     checkable:true  },
+};
+
+function chipMeta(c) { return CHIP_META[c] || CHIP_META.custom; }
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const WEEKS = [
+  { week:1, dates:"May 4–10", label:"Base Building", total:"~12–14 mi", pace:"conversational", strength:"1x",
+    days:[
+      { d:"Mon", dt:4,  mo:"May", type:"yoga",     chips:["yoga"],          detail:"Hard class · cross-training",            pri:"keep"     },
+      { d:"Tue", dt:5,  mo:"May", type:"run",      chips:["run","itb"],     dist:"3 mi",     detail:"30–35 min · conversational pace",        pri:"critical" },
+      { d:"Wed", dt:6,  mo:"May", type:"strength", chips:["strength"],      detail:"60 min · HIIT/lifting",                  pri:"flex"     },
+      { d:"Thu", dt:7,  mo:"May", type:"run",      chips:["run"],           dist:"3–4 mi",   detail:"35–45 min · easy effort",                pri:"keep"     },
+      { d:"Fri", dt:8,  mo:"May", type:"yoga",     chips:["yoga"],          detail:"60 min · mobility prep",                 pri:"flex"     },
+      { d:"Sat", dt:9,  mo:"May", type:"long",     chips:["long","itb"],    dist:"5–6 mi",   detail:"50–65 min · slow · bring water",         pri:"critical" },
+      { d:"Sun", dt:10, mo:"May", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:2, dates:"May 11–17", label:"Base Building", total:"~14–16 mi", pace:"easy · 11–13 min/mi", strength:"1x",
+    days:[
+      { d:"Mon", dt:11, mo:"May", type:"yoga",     chips:["yoga"],          detail:"Hard class · committed",                 pri:"keep"     },
+      { d:"Tue", dt:12, mo:"May", type:"run",      chips:["run","itb"],     dist:"3–4 mi",   detail:"35–40 min · no huffing",                 pri:"critical" },
+      { d:"Wed", dt:13, mo:"May", type:"strength", chips:["strength"],      detail:"60 min · focus glutes/hips",             pri:"flex"     },
+      { d:"Thu", dt:14, mo:"May", type:"run",      chips:["run"],           dist:"4 mi",     detail:"40–45 min · conversational",             pri:"keep"     },
+      { d:"Fri", dt:15, mo:"May", type:"yoga",     chips:["yoga"],          detail:"60 min · pre-long-run prep",             pri:"flex"     },
+      { d:"Sat", dt:16, mo:"May", type:"long",     chips:["long","itb"],    dist:"6–7 mi",   detail:"60–75 min · slow & steady",              pri:"critical" },
+      { d:"Sun", dt:17, mo:"May", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:3, dates:"May 18–24", label:"Base Building", total:"~16–18 mi", pace:"easy · 11–12 min/mi", strength:"1x",
+    days:[
+      { d:"Mon", dt:18, mo:"May", type:"yoga",     chips:["yoga"],          detail:"Hard class · committed",                 pri:"keep"     },
+      { d:"Tue", dt:19, mo:"May", type:"run",      chips:["run","itb"],     dist:"4 mi",     detail:"40 min · still easy",                    pri:"critical" },
+      { d:"Wed", dt:20, mo:"May", type:"strength", chips:["strength"],      detail:"60 min · glutes/core/hips",              pri:"flex"     },
+      { d:"Thu", dt:21, mo:"May", type:"run",      chips:["run"],           dist:"4–5 mi",   detail:"45 min · go by feel",                    pri:"keep"     },
+      { d:"Fri", dt:22, mo:"May", type:"yoga",     chips:["yoga"],          detail:"60 min · can skip if tired",             pri:"flex"     },
+      { d:"Sat", dt:23, mo:"May", type:"long",     chips:["long","itb"],    dist:"7–8 mi",   detail:"70–85 min · practice fueling",           pri:"critical" },
+      { d:"Sun", dt:24, mo:"May", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:4, dates:"May 25–31", label:"Cutback Week ↓", total:"~12–13 mi", pace:"easy · let body absorb", strength:"0x",
+    note:"Intentional cutback — don't skip it",
+    days:[
+      { d:"Mon", dt:25, mo:"May", type:"yoga",     chips:["yoga"],          detail:"Hard class · committed",                 pri:"keep"     },
+      { d:"Tue", dt:26, mo:"May", type:"run",      chips:["run"],           dist:"3 mi",     detail:"30 min · short & easy",                  pri:"critical" },
+      { d:"Wed", dt:27, mo:"May", type:"rest",     chips:["rest"],          detail:"Rest / light walk only",                 pri:"none"     },
+      { d:"Thu", dt:28, mo:"May", type:"run",      chips:["run"],           dist:"3–4 mi",   detail:"35 min · easy effort",                   pri:"keep"     },
+      { d:"Fri", dt:29, mo:"May", type:"yoga",     chips:["yoga"],          detail:"60 min · recovery focus",                pri:"flex"     },
+      { d:"Sat", dt:30, mo:"May", type:"long",     chips:["long","itb"],    dist:"5–6 mi",   detail:"50–60 min · pull back intentionally",    pri:"critical" },
+      { d:"Sun", dt:31, mo:"May", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:5, dates:"Jun 1–7", label:"Building", total:"~17–19 mi", pace:"easy · 10:30–12 min/mi", strength:"1x",
+    days:[
+      { d:"Mon", dt:1, mo:"Jun", type:"yoga",      chips:["yoga"],          detail:"Hard class · committed",                 pri:"keep"     },
+      { d:"Tue", dt:2, mo:"Jun", type:"run",       chips:["run","itb"],     dist:"4–5 mi",   detail:"45 min · building again",                pri:"critical" },
+      { d:"Wed", dt:3, mo:"Jun", type:"strength",  chips:["strength"],      detail:"60 min · glutes/hips priority",          pri:"flex"     },
+      { d:"Thu", dt:4, mo:"Jun", type:"run",       chips:["run"],           dist:"4–5 mi",   detail:"45–50 min · conversational",             pri:"keep"     },
+      { d:"Fri", dt:5, mo:"Jun", type:"yoga",      chips:["yoga"],          detail:"60 min · pre-long-run prep",             pri:"flex"     },
+      { d:"Sat", dt:6, mo:"Jun", type:"long",      chips:["long","itb"],    dist:"8–9 mi",   detail:"80–95 min · fuel every 45 min",          pri:"critical" },
+      { d:"Sun", dt:7, mo:"Jun", type:"rest",      chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:6, dates:"Jun 8–14", label:"Strength Reintro", total:"~18–20 mi", pace:"easy · 11–12 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:8,  mo:"Jun", type:"yoga",     chips:["yoga"],          detail:"Hard class · confirmed",                 pri:"critical" },
+      { d:"Tue", dt:9,  mo:"Jun", type:"run",      chips:["run","itb"],     dist:"4–5 mi",   detail:"Road or trail",                          pri:"critical" },
+      { d:"Wed", dt:10, mo:"Jun", type:"double",   chips:["yoga","strength"],detail:"Yoga AM · strength PM",                 pri:"keep",  isDouble:true },
+      { d:"Thu", dt:11, mo:"Jun", type:"run",      chips:["run"],           dist:"4–5 mi",   detail:"45 min · conversational",                pri:"keep"     },
+      { d:"Fri", dt:12, mo:"Jun", type:"rest",     chips:["rest"],          detail:"Pre-long-run rest",                      pri:"none"     },
+      { d:"Sat", dt:13, mo:"Jun", type:"long",     chips:["trail","itb"],   dist:"8–9 mi",   detail:"Wash Park / South Table Mtn · +10–15 min trail pace", pri:"critical" },
+      { d:"Sun", dt:14, mo:"Jun", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:7, dates:"Jun 15–21", label:"Vacation starts Thu", total:"~16–18 mi", pace:"easy · enjoy it", strength:"1x",
+    note:"Vacation starts Thu Jun 18 · trail window Mon–Wed only",
+    days:[
+      { d:"Mon", dt:15, mo:"Jun", type:"yoga",     chips:["yoga"],          detail:"Maybe · skip if needed",                 pri:"flex"     },
+      { d:"Tue", dt:16, mo:"Jun", type:"run",      chips:["trail","itb"],   dist:"5 mi",     detail:"Highline Canal or Bear Creek · easy",    pri:"critical" },
+      { d:"Wed", dt:17, mo:"Jun", type:"strength", chips:["strength"],      detail:"60 min · last full session",             pri:"keep"     },
+      { d:"Thu", dt:18, mo:"Jun", type:"travel",   chips:["travel"],        detail:"Travel day · rest or short walk",        pri:"none"     },
+      { d:"Fri", dt:19, mo:"Jun", type:"vacation", chips:["run"],           dist:"3–4 mi",   detail:"Beach run · early AM",                   pri:"keep"     },
+      { d:"Sat", dt:20, mo:"Jun", type:"vacation", chips:["long"],          dist:"8–9 mi",   detail:"Packed sand or pavement · early AM",     pri:"critical" },
+      { d:"Sun", dt:21, mo:"Jun", type:"vacation", chips:["rest"],          detail:"Beach day · walk · enjoy",               pri:"none"     },
+    ]},
+  { week:8, dates:"Jun 22–28", label:"5k Race Week 🏖️", total:"~15–17 mi", pace:"5k race effort Wed", strength:"1x gym",
+    note:"Full vacation · gym available · treat as modified cutback", isVacation:true,
+    days:[
+      { d:"Mon", dt:22, mo:"Jun", type:"vacation", chips:["rest"],          detail:"Pre-race rest · stay off feet",          pri:"none"     },
+      { d:"Tue", dt:23, mo:"Jun", type:"vacation", chips:["run"],           dist:"2–3 mi",   detail:"Very easy shakeout · pre-race tune-up",  pri:"keep"     },
+      { d:"Wed", dt:24, mo:"Jun", type:"race",     chips:["race"],          dist:"3.1 mi",   detail:"Run it! Note splits · comfortably hard", pri:"critical" },
+      { d:"Thu", dt:25, mo:"Jun", type:"vacation", chips:["rest"],          detail:"Post-race recovery · beach walk only",   pri:"none"     },
+      { d:"Fri", dt:26, mo:"Jun", type:"vacation", chips:["run","strength"],dist:"4 mi",     detail:"Easy run · gym strength after",          pri:"keep",  isDouble:true },
+      { d:"Sat", dt:27, mo:"Jun", type:"vacation", chips:["long"],          dist:"6–7 mi",   detail:"Early AM · easy · last beach run",       pri:"critical" },
+      { d:"Sun", dt:28, mo:"Jun", type:"travel",   chips:["travel"],        detail:"Travel home · rest · no guilt",          pri:"none"     },
+    ]},
+  { week:9, dates:"Jun 29–Jul 5", label:"Back to Denver", total:"~20–22 mi", pace:"easy · altitude legs", strength:"2x",
+    note:"Re-establish routine · altitude readjust · don't race back",
+    days:[
+      { d:"Mon", dt:29, mo:"Jun", type:"rest",     chips:["rest"],          detail:"Back home · unpack · recover",           pri:"none"     },
+      { d:"Tue", dt:30, mo:"Jun", type:"run",      chips:["run","itb"],     dist:"4–5 mi",   detail:"First Denver run · slower is fine",      pri:"critical" },
+      { d:"Wed", dt:1,  mo:"Jul", type:"double",   chips:["yoga","strength"],detail:"Back to class · stack if needed",        pri:"keep",  isDouble:true },
+      { d:"Thu", dt:2,  mo:"Jul", type:"run",      chips:["run"],           dist:"5 mi",     detail:"50 min · ease back in",                  pri:"keep"     },
+      { d:"Fri", dt:3,  mo:"Jul", type:"rest",     chips:["rest"],          detail:"July 4th eve · rest up",                 pri:"none"     },
+      { d:"Sat", dt:4,  mo:"Jul", type:"long",     chips:["trail","itb"],   dist:"10–11 mi", detail:"Chatfield / Bear Creek · early AM",      pri:"critical" },
+      { d:"Sun", dt:5,  mo:"Jul", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:10, dates:"Jul 6–12", label:"Building", total:"~23–25 mi", pace:"easy · 10:30–11:30 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:6,  mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Hard or moderate class",                 pri:"flex"     },
+      { d:"Tue", dt:7,  mo:"Jul", type:"run",      chips:["trail","itb"],   dist:"5–6 mi",   detail:"Highline Canal · flat & easy",           pri:"critical" },
+      { d:"Wed", dt:8,  mo:"Jul", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:9,  mo:"Jul", type:"double",   chips:["run","strength"],dist:"5–6 mi",   detail:"Road run · short strength after",        pri:"keep",  isDouble:true },
+      { d:"Fri", dt:10, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"60 min · pre-long-run prep",             pri:"flex"     },
+      { d:"Sat", dt:11, mo:"Jul", type:"long",     chips:["trail","itb"],   dist:"11–12 mi", detail:"Green Mtn / Chatfield · ~2 hrs · early AM", pri:"critical" },
+      { d:"Sun", dt:12, mo:"Jul", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:11, dates:"Jul 13–19", label:"Building", total:"~24–26 mi", pace:"easy · 10:30–11:30 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:13, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Hard class",                             pri:"keep"     },
+      { d:"Tue", dt:14, mo:"Jul", type:"run",      chips:["run","itb"],     dist:"5–6 mi",   detail:"Easy effort · road or trail",            pri:"critical" },
+      { d:"Wed", dt:15, mo:"Jul", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:16, mo:"Jul", type:"double",   chips:["run","strength"],dist:"5–6 mi",   detail:"Easy run · 30 min strength after",       pri:"keep",  isDouble:true },
+      { d:"Fri", dt:17, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Mobility prep",                          pri:"flex"     },
+      { d:"Sat", dt:18, mo:"Jul", type:"long",     chips:["trail","itb"],   dist:"12–13 mi", detail:"~2:10 hrs · trail preferred · fuel every 45 min", pri:"critical" },
+      { d:"Sun", dt:19, mo:"Jul", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:12, dates:"Jul 20–26", label:"Cutback Week ↓", total:"~16–17 mi", pace:"easy · recovery", strength:"1x",
+    note:"Third cutback — let the big weeks sink in",
+    days:[
+      { d:"Mon", dt:20, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Class or skip",                          pri:"flex"     },
+      { d:"Tue", dt:21, mo:"Jul", type:"run",      chips:["run","itb"],     dist:"4 mi",     detail:"Easy · short",                           pri:"critical" },
+      { d:"Wed", dt:22, mo:"Jul", type:"strength", chips:["strength"],      detail:"60 min · maintain",                      pri:"keep"     },
+      { d:"Thu", dt:23, mo:"Jul", type:"run",      chips:["run"],           dist:"4 mi",     detail:"Easy effort",                            pri:"keep"     },
+      { d:"Fri", dt:24, mo:"Jul", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+      { d:"Sat", dt:25, mo:"Jul", type:"long",     chips:["long","itb"],    dist:"7–8 mi",   detail:"Pull back intentionally · slow",         pri:"critical" },
+      { d:"Sun", dt:26, mo:"Jul", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:13, dates:"Jul 27–Aug 2", label:"Building", total:"~26–28 mi", pace:"easy · 10–11:30 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:27, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Hard class",                             pri:"keep"     },
+      { d:"Tue", dt:28, mo:"Jul", type:"run",      chips:["run","itb"],     dist:"6 mi",     detail:"Easy effort · conversational",           pri:"critical" },
+      { d:"Wed", dt:29, mo:"Jul", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:30, mo:"Jul", type:"double",   chips:["run","strength"],dist:"6 mi",     detail:"Easy run · 30 min strength after",       pri:"keep",  isDouble:true },
+      { d:"Fri", dt:31, mo:"Jul", type:"yoga",     chips:["yoga"],          detail:"Mobility prep",                          pri:"flex"     },
+      { d:"Sat", dt:1,  mo:"Aug", type:"long",     chips:["trail","itb"],   dist:"14–15 mi", detail:"~2:30 hrs · trail preferred · fuel every 40 min", pri:"critical" },
+      { d:"Sun", dt:2,  mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:14, dates:"Aug 3–9", label:"Building", total:"~27–29 mi", pace:"easy · 10–11 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:3,  mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Hard class",                             pri:"keep"     },
+      { d:"Tue", dt:4,  mo:"Aug", type:"run",      chips:["run","itb"],     dist:"6–7 mi",   detail:"Easy · conversational",                  pri:"critical" },
+      { d:"Wed", dt:5,  mo:"Aug", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:6,  mo:"Aug", type:"double",   chips:["run","strength"],dist:"6 mi",     detail:"Easy run · strength after",              pri:"keep",  isDouble:true },
+      { d:"Fri", dt:7,  mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Mobility",                               pri:"flex"     },
+      { d:"Sat", dt:8,  mo:"Aug", type:"long",     chips:["trail","itb"],   dist:"15–16 mi", detail:"~2:45 hrs · trail preferred · fuel every 40 min", pri:"critical" },
+      { d:"Sun", dt:9,  mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:15, dates:"Aug 10–16", label:"Cutback Week ↓", total:"~18–20 mi", pace:"easy · recovery", strength:"1x",
+    note:"Fourth cutback — body needs this before peak block",
+    days:[
+      { d:"Mon", dt:10, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Class or skip",                          pri:"flex"     },
+      { d:"Tue", dt:11, mo:"Aug", type:"run",      chips:["run","itb"],     dist:"4–5 mi",   detail:"Easy · short",                           pri:"critical" },
+      { d:"Wed", dt:12, mo:"Aug", type:"strength", chips:["strength"],      detail:"60 min · maintain",                      pri:"keep"     },
+      { d:"Thu", dt:13, mo:"Aug", type:"run",      chips:["run"],           dist:"4–5 mi",   detail:"Easy effort",                            pri:"keep"     },
+      { d:"Fri", dt:14, mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+      { d:"Sat", dt:15, mo:"Aug", type:"long",     chips:["long","itb"],    dist:"8–9 mi",   detail:"Pull back · slow · enjoy it",            pri:"critical" },
+      { d:"Sun", dt:16, mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:16, dates:"Aug 17–23", label:"Peak Block Begins", total:"~29–31 mi", pace:"easy · 10–11 min/mi", strength:"2x",
+    note:"Peak training begins — protect your sleep and nutrition",
+    days:[
+      { d:"Mon", dt:17, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Hard class",                             pri:"keep"     },
+      { d:"Tue", dt:18, mo:"Aug", type:"run",      chips:["run","itb"],     dist:"6–7 mi",   detail:"Easy · conversational",                  pri:"critical" },
+      { d:"Wed", dt:19, mo:"Aug", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:20, mo:"Aug", type:"double",   chips:["run","strength"],dist:"7 mi",     detail:"Easy run · strength after",              pri:"keep",  isDouble:true },
+      { d:"Fri", dt:21, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Mobility",                               pri:"flex"     },
+      { d:"Sat", dt:22, mo:"Aug", type:"long",     chips:["trail","itb"],   dist:"17–18 mi", detail:"~3 hrs · trail or road · fuel every 40 min", pri:"critical" },
+      { d:"Sun", dt:23, mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:17, dates:"Aug 24–30", label:"Peak Block", total:"~30–32 mi", pace:"easy · 10–11 min/mi", strength:"2x",
+    days:[
+      { d:"Mon", dt:24, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Hard class",                             pri:"keep"     },
+      { d:"Tue", dt:25, mo:"Aug", type:"run",      chips:["run","itb"],     dist:"7 mi",     detail:"Easy · conversational",                  pri:"critical" },
+      { d:"Wed", dt:26, mo:"Aug", type:"strength", chips:["strength"],      detail:"60 min · glutes/hips/core",              pri:"keep"     },
+      { d:"Thu", dt:27, mo:"Aug", type:"double",   chips:["run","strength"],dist:"7 mi",     detail:"Easy run · strength after",              pri:"keep",  isDouble:true },
+      { d:"Fri", dt:28, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Mobility",                               pri:"flex"     },
+      { d:"Sat", dt:29, mo:"Aug", type:"long",     chips:["trail","itb"],   dist:"18–20 mi", detail:"~3:20 hrs · biggest run · go slow",      pri:"critical" },
+      { d:"Sun", dt:30, mo:"Aug", type:"rest",     chips:["rest"],          detail:"Full rest — you earned it",              pri:"none"     },
+    ]},
+  { week:18, dates:"Aug 31–Sep 6", label:"Cutback Week ↓", total:"~18–20 mi", pace:"easy · recovery", strength:"1x",
+    note:"Last big cutback before taper — trust the process",
+    days:[
+      { d:"Mon", dt:31, mo:"Aug", type:"yoga",     chips:["yoga"],          detail:"Class or skip",                          pri:"flex"     },
+      { d:"Tue", dt:1,  mo:"Sep", type:"run",      chips:["run","itb"],     dist:"4–5 mi",   detail:"Easy · short",                           pri:"critical" },
+      { d:"Wed", dt:2,  mo:"Sep", type:"strength", chips:["strength"],      detail:"Lighter session · maintain",             pri:"keep"     },
+      { d:"Thu", dt:3,  mo:"Sep", type:"run",      chips:["run"],           dist:"4–5 mi",   detail:"Easy effort",                            pri:"keep"     },
+      { d:"Fri", dt:4,  mo:"Sep", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+      { d:"Sat", dt:5,  mo:"Sep", type:"long",     chips:["long","itb"],    dist:"9–10 mi",  detail:"Easy · celebrate how far you've come",   pri:"critical" },
+      { d:"Sun", dt:6,  mo:"Sep", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:19, dates:"Sep 7–13", label:"Taper Begins", total:"~22–24 mi", pace:"easy · 10–11 min/mi", strength:"1x",
+    note:"Taper starts — volume drops, don't add miles back",
+    days:[
+      { d:"Mon", dt:7,  mo:"Sep", type:"yoga",     chips:["yoga"],          detail:"Class · good for taper anxiety",         pri:"keep"     },
+      { d:"Tue", dt:8,  mo:"Sep", type:"run",      chips:["run","itb"],     dist:"5–6 mi",   detail:"Easy · legs should feel fresher",         pri:"critical" },
+      { d:"Wed", dt:9,  mo:"Sep", type:"strength", chips:["strength"],      detail:"Last heavy strength session",            pri:"keep"     },
+      { d:"Thu", dt:10, mo:"Sep", type:"run",      chips:["run"],           dist:"5 mi",     detail:"Easy effort",                            pri:"keep"     },
+      { d:"Fri", dt:11, mo:"Sep", type:"yoga",     chips:["yoga"],          detail:"Mobility",                               pri:"flex"     },
+      { d:"Sat", dt:12, mo:"Sep", type:"long",     chips:["long","itb"],    dist:"13–14 mi", detail:"Taper long run · still easy pace",       pri:"critical" },
+      { d:"Sun", dt:13, mo:"Sep", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:20, dates:"Sep 14–20", label:"Taper", total:"~18–20 mi", pace:"easy · stay fresh", strength:"light",
+    note:"Keep moving but don't chase fitness — it's already there",
+    days:[
+      { d:"Mon", dt:14, mo:"Sep", type:"yoga",     chips:["yoga"],          detail:"Class · taper madness antidote",         pri:"keep"     },
+      { d:"Tue", dt:15, mo:"Sep", type:"run",      chips:["run","itb"],     dist:"5 mi",     detail:"Easy · enjoy feeling good",              pri:"critical" },
+      { d:"Wed", dt:16, mo:"Sep", type:"strength", chips:["strength"],      detail:"Light session only · no heavy lifting",  pri:"flex"     },
+      { d:"Thu", dt:17, mo:"Sep", type:"run",      chips:["run"],           dist:"4–5 mi",   detail:"Easy effort",                            pri:"keep"     },
+      { d:"Fri", dt:18, mo:"Sep", type:"yoga",     chips:["yoga"],          detail:"Mobility",                               pri:"flex"     },
+      { d:"Sat", dt:19, mo:"Sep", type:"long",     chips:["long","itb"],    dist:"10–12 mi", detail:"Last double-digit run · easy · celebrate", pri:"critical" },
+      { d:"Sun", dt:20, mo:"Sep", type:"rest",     chips:["rest"],          detail:"Full rest",                              pri:"none"     },
+    ]},
+  { week:21, dates:"Sep 21–27", label:"Race Week Prep", total:"~14–16 mi", pace:"easy · stay sharp", strength:"none",
+    note:"Drive to St. George Thu · expo Fri · rest Sat–Sun",
+    days:[
+      { d:"Mon", dt:21, mo:"Sep", type:"yoga",     chips:["yoga"],          detail:"Class · last one before race",           pri:"keep"     },
+      { d:"Tue", dt:22, mo:"Sep", type:"run",      chips:["run","itb"],     dist:"4–5 mi",   detail:"Easy · feeling good is the goal",        pri:"critical" },
+      { d:"Wed", dt:23, mo:"Sep", type:"run",      chips:["run"],           dist:"3–4 mi",   detail:"Short easy run · strides optional",      pri:"keep"     },
+      { d:"Thu", dt:24, mo:"Sep", type:"travel",   chips:["travel"],        detail:"Drive to St. George · ~7.5 hrs · rest on arrival", pri:"none" },
+      { d:"Fri", dt:25, mo:"Sep", type:"rest",     chips:["rest"],          detail:"Expo & packet pickup · Dixie Convention Center 10am–8pm", pri:"keep" },
+      { d:"Sat", dt:26, mo:"Sep", type:"rest",     chips:["rest"],          detail:"Rest · short 10–15 min shakeout AM · carb load · sleep early", pri:"keep" },
+      { d:"Sun", dt:27, mo:"Sep", type:"rest",     chips:["rest"],          detail:"Full rest · visualize · lay out race kit", pri:"none"   },
+    ]},
+  { week:22, dates:"Oct 1–3", label:"RACE WEEK 🏁", total:"26.2 mi race day", pace:"your marathon", strength:"none",
+    note:"You did the work. Trust your training.", isRace:true,
+    days:[
+      { d:"Mon", dt:1, mo:"Oct", type:"rest",      chips:["rest"],          detail:"Rest · final carb load begins · hydrate all day", pri:"none" },
+      { d:"Tue", dt:2, mo:"Oct", type:"rest",      chips:["rest"],          detail:"Rest · 10 min shakeout optional · sleep early · race kit ready", pri:"keep" },
+      { d:"Wed", dt:3, mo:"Oct", type:"race",      chips:["race"],          dist:"26.2 mi",  detail:"🏁 ST. GEORGE MARATHON · start line 6:45am · you've got this", pri:"critical" },
+    ]},
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+
+let currentWeek = 0;
+let state = {};
+
+function loadState() {
+  try { state = JSON.parse(localStorage.getItem('sgm_state2') || '{}'); }
+  catch(e) { state = {}; }
+}
+function saveState() { localStorage.setItem('sgm_state2', JSON.stringify(state)); }
+
+// Per-activity check: key = w{wi}_d{di}_c{ci}
+function actKey(wi, di, ci) { return `w${wi}_d${di}_c${ci}`; }
+function isActDone(wi, di, ci) { return !!state[actKey(wi, di, ci)]; }
+function setActDone(wi, di, ci, val) { state[actKey(wi, di, ci)] = val; saveState(); }
+
+function customKey(wi, di) { return `custom_w${wi}_d${di}`; }
+function getCustom(wi, di) { return state[customKey(wi, di)] || []; }
+function addCustom(wi, di, label) {
+  const arr = getCustom(wi, di);
+  arr.push(label);
+  state[customKey(wi, di)] = arr;
+  saveState();
+}
+function removeCustom(wi, di, idx) {
+  const arr = getCustom(wi, di);
+  arr.splice(idx, 1);
+  state[customKey(wi, di)] = arr;
+  saveState();
+}
+
+// A day card is "all done" if every checkable chip is checked
+function isDayAllDone(wi, di) {
+  const day = WEEKS[wi].days[di];
+  const checkable = day.chips.filter(c => chipMeta(c).checkable);
+  const customs = getCustom(wi, di);
+  const total = checkable.length + customs.length;
+  if (total === 0) return false;
+  const doneCount = checkable.filter((c, ci) => isActDone(wi, di, ci)).length
+    + customs.filter((_, ci) => isActDone(wi, di, checkable.length + ci)).length;
+  return doneCount === total;
+}
+
+function countChecked(wi) {
+  let done = 0, total = 0;
+  WEEKS[wi].days.forEach((day, di) => {
+    const checkable = day.chips.filter(c => chipMeta(c).checkable);
+    const customs = getCustom(wi, di);
+    total += checkable.length + customs.length;
+    done += checkable.filter((c, ci) => isActDone(wi, di, ci)).length
+          + customs.filter((_, ci) => isActDone(wi, di, checkable.length + ci)).length;
+  });
+  return { done, total };
+}
+
+function countAllChecked() {
+  let done = 0, total = 0;
+  WEEKS.forEach((_, wi) => {
+    const c = countChecked(wi);
+    done += c.done; total += c.total;
+  });
+  return { done, total };
+}
+
+// ─── RENDER ─────────────────────────────────────────────────────────────────
+
+function priDotHTML(pri) {
+  const cls = { critical:'pri-critical', keep:'pri-keep', flex:'pri-flex', none:'pri-none' };
+  return `<span class="pri-dot ${cls[pri]||'pri-none'}"></span>`;
+}
+
+function cardBaseClass(day) {
+  if (day.type === 'rest')     return 'day-card rest-day';
+  if (day.type === 'travel')   return 'day-card travel-day';
+  if (day.type === 'vacation') return 'day-card vacation-day';
+  if (day.type === 'race')     return 'day-card race-day';
+  return 'day-card';
+}
+
+function buildWeekHTML(wi) {
+  const wk = WEEKS[wi];
+  let html = '';
+  if (wk.isRace) {
+    html += `<div class="race-banner">🏁 Race Week — St. George Marathon · October 3, 2026</div>`;
+  }
+  html += `<div class="days-list">`;
+
+  wk.days.forEach((day, di) => {
+    const allDone = isDayAllDone(wi, di);
+    let cardCls = cardBaseClass(day) + (allDone ? ' all-done' : '');
+    const customs = getCustom(wi, di);
+    const isVac = day.type === 'vacation';
+
+    // chips row
+    const chipsHTML = day.chips.map(c => {
+      const m = chipMeta(c);
+      const lbl = (c === 'race' && wi === 21) ? '🏁 Marathon' : m.label;
+      return `<span class="chip ${m.cls}">${lbl}</span>`;
+    }).join('') + customs.map(c => `<span class="chip chip-custom">✦ ${c}</span>`).join('');
+
+    // check circles — one per checkable activity
+    const checkableChips = day.chips.filter(c => chipMeta(c).checkable);
+    let checksHTML = '';
+    if (checkableChips.length > 0 || customs.length > 0) {
+      checksHTML = `<div class="day-checks">`;
+      // priority dot on top
+      checksHTML += `<div>${priDotHTML(day.pri)}</div>`;
+      checkableChips.forEach((c, ci) => {
+        const m = chipMeta(c);
+        const done = isActDone(wi, di, ci);
+        checksHTML += `<button class="check-btn ${done ? 'checked' : m.ring}" onclick="toggleAct(event,${wi},${di},${ci})">${done ? '✓' : ''}</button>`;
+      });
+      customs.forEach((_, ci) => {
+        const realCi = checkableChips.length + ci;
+        const done = isActDone(wi, di, realCi);
+        checksHTML += `<button class="check-btn ${done ? 'checked' : 'ring-yoga'}" onclick="toggleAct(event,${wi},${di},${realCi})">${done ? '✓' : ''}</button>`;
+      });
+      checksHTML += `</div>`;
+    }
+
+    const dougeLabel = day.isDouble ? `<div class="double-badge">double day</div>` : '';
+    const vacLabel   = isVac        ? `<div class="vac-badge">vacation</div>`       : '';
+
+    html += `
+    <div class="${cardCls}" id="card_${wi}_${di}">
+      <div class="day-main" onclick="toggleExpand(${wi},${di})">
+        <div class="day-date-col">
+          <div class="day-name-label">${day.d}</div>
+          <div class="day-num-label">${day.dt}</div>
+        </div>
+        <div class="day-divider"></div>
+        <div class="day-content">
+          ${dougeLabel}${vacLabel}
+          <div class="activity-chips" id="chips_${wi}_${di}">${chipsHTML}</div>
+          ${day.dist ? `<div class="day-dist-text">${day.dist}</div>` : ''}
+          <div class="day-detail-text">${day.detail}</div>
+        </div>
+        ${checksHTML}
+      </div>
+      <div class="day-expand" id="expand_${wi}_${di}">
+        <div class="expand-inner">
+          <div class="add-activity-row">
+            <input class="add-input" id="input_${wi}_${di}" placeholder="Add activity…" maxlength="40"
+              onkeydown="if(event.key==='Enter')addActivity(${wi},${di})">
+            <button class="add-btn" onclick="addActivity(${wi},${di})">Add</button>
+          </div>
+          <div class="custom-activities" id="customs_${wi}_${di}">
+            ${renderCustoms(wi, di)}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  const { done, total } = countChecked(wi);
+  if (total > 0) html += `<div class="done-count">${done} of ${total} activities done this week</div>`;
+  return html;
+}
+
+function renderCustoms(wi, di) {
+  return getCustom(wi, di).map((c, idx) =>
+    `<div class="custom-item">
+      <span>✦ ${c}</span>
+      <button class="remove-btn" onclick="removeActivity(${wi},${di},${idx})">×</button>
+    </div>`
+  ).join('');
+}
+
+function hasDone(wi) {
+  return WEEKS[wi].days.some((_, di) => isDayAllDone(wi, di)) ||
+    countChecked(wi).done > 0;
+}
+
+function renderAll() {
+  // week pills
+  const nav = document.getElementById('weekNav');
+  nav.innerHTML = WEEKS.map((wk, wi) => {
+    let cls = 'week-pill';
+    if (wi === currentWeek) cls += ' active';
+    else if (wk.isRace) cls += ' is-race';
+    else if (wk.isVacation) cls += ' is-vacation';
+    else if (hasDone(wi)) cls += ' has-done';
+    return `<button class="${cls}" onclick="goToWeek(${wi})" id="pill_${wi}">W${wk.week}</button>`;
+  }).join('');
+
+  const wk = WEEKS[currentWeek];
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="week-section">
+      <div class="week-header">
+        <div class="week-title-row">
+          <div class="week-title">Week ${wk.week}</div>
+          <div class="week-dates">${wk.dates}</div>
+        </div>
+        <div class="week-stats">
+          <div class="week-stat"><strong>${wk.label}</strong></div>
+          <div class="week-stat">Total: <strong>${wk.total}</strong></div>
+          ${wk.pace ? `<div class="week-stat">Pace: <strong>${wk.pace}</strong></div>` : ''}
+          ${wk.strength ? `<div class="week-stat">Strength: <strong>${wk.strength}</strong></div>` : ''}
+        </div>
+        ${wk.note ? `<div class="week-note">⚡ ${wk.note}</div>` : ''}
+      </div>
+      ${buildWeekHTML(currentWeek)}
+    </div>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--neon-coral)"></span>Never skip</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--neon-violet)"></span>Try to keep</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--neon-lime)"></span>Flexible</div>
+    </div>`;
+
+  updateProgress();
+  updateNav();
+  setTimeout(() => {
+    const pill = document.getElementById(`pill_${currentWeek}`);
+    if (pill) pill.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }, 50);
+}
+
+function updateProgress() {
+  const { done, total } = countAllChecked();
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total}`;
+}
+
+function updateNav() {
+  document.getElementById('prevBtn').disabled = currentWeek === 0;
+  document.getElementById('nextBtn').disabled = currentWeek === WEEKS.length - 1;
+  document.getElementById('navCenter').textContent = `Week ${currentWeek + 1} of ${WEEKS.length}`;
+}
+
+// ─── INTERACTIONS ────────────────────────────────────────────────────────────
+
+function goToWeek(wi) {
+  currentWeek = wi;
+  renderAll();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function changeWeek(dir) {
+  const n = currentWeek + dir;
+  if (n >= 0 && n < WEEKS.length) goToWeek(n);
+}
+
+function toggleAct(e, wi, di, ci) {
+  e.stopPropagation();
+  setActDone(wi, di, ci, !isActDone(wi, di, ci));
+
+  // update just this button
+  const card = document.getElementById(`card_${wi}_${di}`);
+  const btns = card.querySelectorAll('.check-btn');
+  const day = WEEKS[wi].days[di];
+  const checkableChips = day.chips.filter(c => chipMeta(c).checkable);
+  const customs = getCustom(wi, di);
+
+  btns.forEach((btn, idx) => {
+    const c = idx < checkableChips.length ? checkableChips[idx] : 'custom';
+    const done = isActDone(wi, di, idx);
+    btn.className = `check-btn ${done ? 'checked' : chipMeta(c).ring}`;
+    btn.textContent = done ? '✓' : '';
+  });
+
+  // update card all-done state
+  if (isDayAllDone(wi, di)) {
+    card.className = cardBaseClass(day) + ' all-done';
+  } else {
+    card.className = cardBaseClass(day);
+  }
+
+  updateProgress();
+}
+
+function toggleExpand(wi, di) {
+  const card = document.getElementById(`card_${wi}_${di}`);
+  const isOpen = card.classList.contains('expanded');
+  document.querySelectorAll('.day-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!isOpen) card.classList.add('expanded');
+}
+
+function addActivity(wi, di) {
+  const input = document.getElementById(`input_${wi}_${di}`);
+  const val = input.value.trim();
+  if (!val) return;
+  addCustom(wi, di, val);
+  input.value = '';
+  // re-render the whole card
+  const card = document.getElementById(`card_${wi}_${di}`);
+  const wasExpanded = card.classList.contains('expanded');
+  // rebuild week
+  const main = document.getElementById('mainContent');
+  const wk = WEEKS[currentWeek];
+  const listEl = main.querySelector('.days-list');
+  if (listEl) listEl.outerHTML = buildWeekHTML(currentWeek).replace(/^[\s\S]*?<div class="days-list">/, '<div class="days-list">');
+  renderAll();
+}
+
+function removeActivity(wi, di, idx) {
+  removeCustom(wi, di, idx);
+  renderAll();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+loadState();
+const today = new Date();
+const w1start = new Date('2026-05-04');
+const daysSince = Math.floor((today - w1start) / 86400000);
+let startWeek = 0;
+if (daysSince >= 0) startWeek = Math.min(Math.floor(daysSince / 7), WEEKS.length - 1);
+currentWeek = Math.max(0, startWeek);
+renderAll();
+</script>
+</body>
+</html>
